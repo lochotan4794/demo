@@ -1,0 +1,4 @@
+{
+  "jwtSecureKey": "123456",
+  "db": "mongodb+srv://holoc:3JxHuVW8Z2NYmwwP@cluster0.gawps.mongodb.net/users?retryWrites=true&w=majority"
+}
