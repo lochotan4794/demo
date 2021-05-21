@@ -21,7 +21,7 @@ exports.createBag = async (req, res, next) => {
   }
 };
 
-exports.editBag = (req, res, next) => {
+exports.editBag = async (req, res, next) => {
   const { email, products } = req.body;
   try {
     let product = await Product.findById(req.params.id);
