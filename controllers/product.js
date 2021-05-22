@@ -4,55 +4,35 @@ const _ = require("lodash");
 const fs = require("fs");
 
 exports.createProduct = (req, res, next) => {
-  upload.array("imgProduct", 2)(req, res, async (err) => {
+  upload.single("imgProduct")(req, res, async (err) => {
     if (err) {
       res.status(400).send("Error while uploading images");
     } else {
-      const {
-        title,
-        category,
-        storyline,
-        author,
-        price,
-        trailer,
-        duration,
-        imdb,
-        release,
-      } = req.body;
-      const { error } = validProduct(req.body);
-      console.log(error);
-      if (error) return res.status(400).send(error.details[0].message);
-
+      const { name, category, price, description } = req.body;
+      // const { error } = validProduct(req.body);
+      // console.log(error);
+      // if (error) return res.status(400).send(error.details[0].message);
       const body =
         req.files.length !== 0
           ? {
-              title,
+              nameProduct,
               category,
-              storyline,
-              author,
               price,
-              trailer,
-              duration,
-              imdb,
-              release,
-              poster: req.files[0].filename,
-              thumbnail: req.files[1].filename,
+              description,
+              image: req.file.filename,
             }
           : {
-              title,
+              nameProduct,
               category,
-              storyline,
-              author,
               price,
-              trailer,
-              duration,
-              imdb,
-              release,
+              description,
             };
       let product = new Product(body);
       try {
         await product.save();
-        res.send(_.pick(product, ["title", "storyline", "author", "price"]));
+        res.send(
+          _.pick(product, ["nameProduct", "category", "price", "description"])
+        );
       } catch (ex) {
         next(ex);
       }
@@ -61,7 +41,7 @@ exports.createProduct = (req, res, next) => {
 };
 
 exports.editProduct = (req, res, next) => {
-  upload.array("imgCate", 2)(req, res, async (err) => {
+  upload.single("imgCate")(req, res, async (err) => {
     if (err) {
       res.status(400).send("Error while uploading image");
     } else {
@@ -74,25 +54,24 @@ exports.editProduct = (req, res, next) => {
         const updateBody =
           req.files.length !== 0
             ? {
+                nameProduct,
+                category,
+                description,
                 price,
-                trailer,
-                numberInstore,
-                stars,
-                poster: req.files[0].filename,
-                thumbnail: req.files[1].filename,
+                image: req.file.filename,
               }
             : {
+                nameProduct,
+                category,
+                description,
                 price,
-                trailer,
-                numberInstore,
-                stars,
-                thumbnail: product.thumbnail,
-                poster: product.poster,
               };
         product = await Product.findByIdAndUpdate(req.params.id, updateBody, {
           new: true,
         });
-        res.send(_.pick(product, ["title", "storyline", "author", "price"]));
+        res.send(
+          _.pick(product, ["nameProduct", "category", "description", "price"])
+        );
       } catch (ex) {
         next(ex);
       }
@@ -112,9 +91,7 @@ exports.deleteProduct = async (req, res, next) => {
 
 exports.getAllProducts = async (req, res, next) => {
   try {
-    const products = await Product.find()
-      .sort("title")
-      .populate("category");
+    const products = await Product.find().sort("title").populate("category");
     res.send(products);
   } catch (ex) {
     next(ex);
