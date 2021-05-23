@@ -4,25 +4,25 @@ const _ = require("lodash");
 const fs = require("fs");
 
 exports.createProduct = (req, res, next) => {
-  upload.single("imgProduct")(req, res, async (err) => {
+  upload.single("image")(req, res, async (err) => {
     if (err) {
       res.status(400).send("Error while uploading images");
     } else {
-      const { name, category, price, description } = req.body;
+      const { productName, category, price, description } = req.body;
       // const { error } = validProduct(req.body);
       // console.log(error);
       // if (error) return res.status(400).send(error.details[0].message);
       const body =
-        req.files.length !== 0
+        req.file
           ? {
-              nameProduct,
+              productName,
               category,
               price,
               description,
               image: req.file.filename,
             }
           : {
-              nameProduct,
+              productName,
               category,
               price,
               description,
@@ -31,7 +31,7 @@ exports.createProduct = (req, res, next) => {
       try {
         await product.save();
         res.send(
-          _.pick(product, ["nameProduct", "category", "price", "description"])
+          _.pick(product, ["productName", "category", "price", "description"])
         );
       } catch (ex) {
         next(ex);
